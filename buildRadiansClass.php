@@ -210,9 +210,9 @@ class BuildRadians {
 					
 					$thirdDistanceQuery = $this->distanceQuery('300', $row['lat'], $row['lng']);
 
-					$thirDistanceNumResults = mysql_num_rows($thirdDistanceQuery);
+					$thirdDistanceNumResults = mysql_num_rows($thirdDistanceQuery);
 
-					if ($thirDistanceNumResults > 0) {
+					if ($thirdDistanceNumResults > 0) {
 						while($newRow = mysql_fetch_assoc($thirdDistanceQuery)) {
 								
 								$update = $this->updateQuery($groupVal, $newRow['userid'], $radius);
