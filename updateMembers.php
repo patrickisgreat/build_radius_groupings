@@ -33,7 +33,7 @@ $cluster->build();
 
 $processedData = $getData->getPostData();
 
-//send to SOLR
+//send to MLA application path
 $post->post($processedData);
 
 ?>
