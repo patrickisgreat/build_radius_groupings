@@ -18,7 +18,7 @@ $freshData = $getData->getData();
 $checkedData = $geoCode->checkData($freshData);
 //geocode the good data add the values to the database
 //once this works figure out how to make it incremental
-/*foreach ($checkedData as $k=>$v) {
+foreach ($checkedData as $k=>$v) {
 	//geocode it
 	$geocode = $geoCode->geocode($v['field22'], $v['field61'], $v['field19'], $v['field23']);
 
@@ -29,7 +29,7 @@ $checkedData = $geoCode->checkData($freshData);
 }
 
 //cluster everything -- should overwrite
-$cluster->build();*/
+$cluster->build();
 
 $processedData = $getData->getPostData();
 
