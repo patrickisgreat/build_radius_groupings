@@ -3,11 +3,13 @@ class Cluster {
 	//public and private props
 		public $offset;
 	    public $radius;
-	    protected $dbConnect;
+	    protected $link;
+	    protected $getData;
 
-	    public function __construct($offset, $radius, DbConnect $link) {
+	    public function __construct($offset, $radius, DbConnect $link, GetData $getData) {
 	    	$this->offset = $offset;
 	    	$this->radius = $radius;
+	    	$this->getData = $getData;
 	    }
 	   
 
@@ -89,7 +91,7 @@ class Cluster {
 		}
 		
 		public function build() {
-
+				$markers = $this->getData->buildMarkers();
 				for ($i=0; $i<7; $i++) {
 					if ($i == 0) {
 						$clustered = $this->cluster($markers, 300);

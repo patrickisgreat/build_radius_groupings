@@ -5,12 +5,11 @@ include('clusterClass.php');
 include('geoCodeClass.php');
 include('getDataClass.php');
 
-//$db = new DbConnect('privatelounge.blacqube.org', 'pbennett', 'n1njAst@r', 'vbulletin');
-$db = new DbConnect('162.243.217.180', 'pbennett', 'swacuGaKur2j', 'vbulletin');
+$db = new DbConnect('', '', '', '');
 $geoCode = new GeoCode($db);
-$cluster = new Cluster(268435456, 85445659.4471, $db);
 $post = new Post($db, '/json_test/test.json');
 $getData = new GetData($db, $geoCode);
+$cluster = new Cluster(268435456, 85445659.4471, $db, $getData);
 
 //get the data
 $freshData = $getData->getData();
@@ -21,9 +20,12 @@ $checkedData = $geoCode->checkData($freshData);
 foreach ($checkedData as $k=>$v) {
 	//geocode it
 	$geocode = $geoCode->geocode($v['field22'], $v['field61'], $v['field19'], $v['field23']);
-
+	echo "foreach";
+	echo "<br />";
 	//check to make sure it got geocoded and then update the datbase
 	if ($geocode['lat'] !== null) {
+		echo "updating db";
+		echo "<br />";
 		$update = $geoCode->updateDb($geocode, $v['userid']);
 	} 
 }
@@ -33,7 +35,7 @@ $cluster->build();
 
 $processedData = $getData->getPostData();
 
-//send to MLA application path
+//send to SOLR
 $post->post($processedData);
 
 ?>
