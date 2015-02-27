@@ -24,14 +24,14 @@
 		public function geocode($postalCode, $countryCode=false, $street, $city) {
 			$key = '&key=AIzaSyB_NJ2bKWoKzNSX3swKMbGQy5byod_bojg';
 			$serviceUrl = 'https://maps.googleapis.com/maps/api/geocode/json?address=';
-			$street = urlencode($street);
+			//$street = urlencode($street);
 			$city = urlencode($city);
 			$postalCode = urlencode($postalCode);
 			if ($countryCode) {
 				$countryCode = urlencode($countryCode);
-				$add = $street."+".$city."+".$postalCode."+".$countryCode;
+				$add = /*$street.*/"+".$city."+".$postalCode."+".$countryCode;
 			} else {
-				$add = $street."+".$city."+".$postalCode."+";
+				$add = /*$street.*/"+".$city."+".$postalCode."+";
 			}
 			$url = $serviceUrl.$add.$key;
 			//echo $url;

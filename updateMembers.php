@@ -5,7 +5,8 @@ include('clusterClass.php');
 include('geoCodeClass.php');
 include('getDataClass.php');
 
-$db = new DbConnect('', '', '', '');
+$db = new DbConnect('hostname', 'UserName', 'passWordToUse', 'tableToUse');
+//$db = new DbConnect('162.243.217.180', 'pbennett', 'swacuGaKur2j', 'vbulletin');
 $geoCode = new GeoCode($db);
 $post = new Post($db, '/json_test/test.json');
 $getData = new GetData($db, $geoCode);
@@ -20,7 +21,7 @@ $checkedData = $geoCode->checkData($freshData);
 foreach ($checkedData as $k=>$v) {
 	//geocode it
 	$geocode = $geoCode->geocode($v['field22'], $v['field61'], $v['field19'], $v['field23']);
-	echo "foreach";
+	var_dump($geocode);
 	echo "<br />";
 	//check to make sure it got geocoded and then update the datbase
 	if ($geocode['lat'] !== null) {
@@ -28,14 +29,13 @@ foreach ($checkedData as $k=>$v) {
 		echo "<br />";
 		$update = $geoCode->updateDb($geocode, $v['userid']);
 	} 
-}
+}*/
 
 //cluster everything -- should overwrite
 $cluster->build();
 
 $processedData = $getData->getPostData();
-
-//send to SOLR
+//send to app locale
 $post->post($processedData);
 
 ?>

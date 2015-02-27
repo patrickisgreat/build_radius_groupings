@@ -70,22 +70,46 @@ class Cluster {
 		public function updateDb($clusters, $zoomLevel) {
 			$clustered = $clusters;
 			$zoom = $zoomLevel;
-			
-				foreach ($clustered as $key => &$val) {
-					foreach ($val as $k => &$v) {
-						if ($k == 0 && $v[$zoom] == null) {
-							$groupVal = uniqid();
-						} else if ($k == 0 && $v[$zoom] !== null) {
-							$groupVal = $v[$zoom];
+				foreach ($clustered as $key => &$val) {					
+					$count = count($val);
+					$key = key($val);
+					//if this is a child array give it a unique value if the first key has never been set
+					if ($key !== "userid") {
+						foreach ($val as $k => &$v) {
+							 if ($k == 0 && $v[$zoom] == null) {
+								$groupVal = uniqid();
+							//or add it to an existing group if the first key was set before
+							} else if ($k == 0 && $v[$zoom] !== null) {
+								$groupVal = $v[$zoom];
+							} 
+							$update = sprintf(	
+				          			"UPDATE userfield SET %s = '%s' WHERE userid = '%s'",
+				          			mysql_real_escape_string($zoom),
+				          			mysql_real_escape_string($groupVal),
+				          			mysql_real_escape_string($v['userid'])
+				          		);
+							echo "is array";
+							echo "<br />";
+							echo $update;
+							echo "<br />";
+							mysql_query($update);
 						}
-						$update = sprintf(
-			          			"UPDATE userfield SET %s = '%s' WHERE userid = '%s'",
-			          			mysql_real_escape_string($zoom),
-			          			mysql_real_escape_string($groupVal),
-			          			mysql_real_escape_string($v['userid'])
-			          			);
-						mysql_query($update);
+					//if it didn't belong to any cluster -- give it a unique value
+					} else {
+						$groupVal = uniqid();
+						$update = sprintf(	
+				          			"UPDATE userfield SET %s = '%s' WHERE userid = '%s'",
+				          			mysql_real_escape_string($zoom),
+				          			mysql_real_escape_string($groupVal),
+				          			mysql_real_escape_string($val['userid'])
+				          		);
+							echo "is NOT array";
+							echo "<br />";
+							echo $update;
+							echo "<br />";
+							mysql_query($update);
 					}
+					
 				}
 			return true;
 		}
@@ -94,27 +118,26 @@ class Cluster {
 				$markers = $this->getData->buildMarkers();
 				for ($i=0; $i<7; $i++) {
 					if ($i == 0) {
-						$clustered = $this->cluster($markers, 300);
-						$this->updateDb($clustered, 'zoomLevel1');
+						//$clustered = $this->cluster($markers, 300);
+						//$this->updateDb($clustered, 'zoomLevel1');
 					} else if ($i == 1) {
-						$clustered = $this->cluster($markers, 200);
-						$this->updateDb($clustered, 'zoomLevel2');
+						//$clustered = $this->cluster($markers, 200);
+						//$this->updateDb($clustered, 'zoomLevel2');
 					} else if ($i == 2) {
-						$clustered = $this->cluster($markers, 150);
-						$this->updateDb($clustered, 'zoomLevel3');
+						//$clustered = $this->cluster($markers, 150);
+						//$this->updateDb($clustered, 'zoomLevel3');
 					} else if ($i == 3) {
-						$clustered = $this->cluster($markers, 100);
-						$this->updateDb($clustered, 'zoomLevel4');
+						//$clustered = $this->cluster($markers, 100);
+						//$this->updateDb($clustered, 'zoomLevel4');
 					} else if ($i == 4) {
-						$clustered = $this->cluster($markers, 50);
-						$this->updateDb($clustered, 'zoomLevel5');
+						//$clustered = $this->cluster($markers, 50);
+						//$this->updateDb($clustered, 'zoomLevel5');
 					} else if ($i == 5) {
-						$clustered = $this->cluster($markers, 25);
+						$clustered = $this->cluster($markers, 25);					
 						$this->updateDb($clustered, 'zoomLevel6');
 					} 
 				}
-
-				return true;
+			return true;
 		}
 }
 ?>

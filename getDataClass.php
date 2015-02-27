@@ -1,7 +1,7 @@
 <?php
 class GetData {
 		
-		/*@__PROPS__instantiated@*/
+		/* @__PROPS__instantiated@ */
 		protected $link;
 		protected $geo;
 		//construct
@@ -10,6 +10,18 @@ class GetData {
 			//GeoCode dependency injected
 			$this->geo = $geo;
 		
+		}
+
+		public function buildMarkers() {
+			$results = mysql_query('SELECT uf.userid, uf.lat, uf.lng, uf.zoomLevel6
+						FROM userfield as uf
+						WHERE (uf.field22 <> "00000" AND uf.lat IS NOT NULL)
+						ORDER BY uf.lat DESC
+						');
+			while ($row = mysql_fetch_assoc($results)) {
+				$markers[] = $row;
+			}
+			return $markers;
 		}
 
 		public function getData() {
@@ -30,10 +42,10 @@ class GetData {
 		public function getPostData() {
 			$result = mysql_query('
 				SELECT uf.userid, uf.field9, uf.field10, uf.field19, uf.field23, uf.field24, uf.field61, uf.field22, uf.field13, uf.field14, uf.lat, uf.lng, uf.zoomLevel6, us.username,
-				us.usertitle, us.posts, us.joindate
+				us.usertitle, us.joindate
 				FROM userfield as uf
 				LEFT OUTER JOIN user as us ON uf.userid = us.userid
-				WHERE (uf.field22 <> "00000"  AND uf.lat is not null AND uf.lat <> 0 AND zoomLevel6 is not null)
+				WHERE (uf.field22 <> "00000"  AND uf.lat is not null AND uf.lat <> 0)
 			');
 
 			if (!$result) {
@@ -44,7 +56,7 @@ class GetData {
 				if ($row['field61'] !="" && $row['field22'] !="" && $row['field19'] !="" && $row['field23'] !="" && $row['field61'] = $this->geo->guessCountry($row['field61'])) {
 					$members[$i]['userid'] = $row['userid'];
 					$members[$i]['username'] = $row['username'];
-            		$members[$i]['num_posts'] = $row['posts'];
+            		//$members[$i]['num_posts'] = $row['posts'];
             		$members[$i]['user_title'] = $row['usertitle'];
             		$dt = new DateTime();
 		            $dt->setTimestamp($row['joindate']);
