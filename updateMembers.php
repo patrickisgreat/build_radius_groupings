@@ -5,8 +5,8 @@ include('clusterClass.php');
 include('geoCodeClass.php');
 include('getDataClass.php');
 
-$db = new DbConnect('hostname', 'UserName', 'passWordToUse', 'tableToUse');
-//$db = new DbConnect('162.243.217.180', 'pbennett', 'swacuGaKur2j', 'vbulletin');
+$db = new DbConnect('database.com', 'username', 'password', 'usedb');
+var_dump($db);
 $geoCode = new GeoCode($db);
 $post = new Post($db, '/json_test/test.json');
 $getData = new GetData($db, $geoCode);
@@ -29,7 +29,7 @@ foreach ($checkedData as $k=>$v) {
 		echo "<br />";
 		$update = $geoCode->updateDb($geocode, $v['userid']);
 	} 
-}*/
+}
 
 //cluster everything -- should overwrite
 $cluster->build();

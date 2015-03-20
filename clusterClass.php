@@ -73,6 +73,7 @@ class Cluster {
 				foreach ($clustered as $key => &$val) {					
 					$count = count($val);
 					$key = key($val);
+					
 					//if this is a child array give it a unique value if the first key has never been set
 					if ($key !== "userid") {
 						foreach ($val as $k => &$v) {
@@ -82,6 +83,7 @@ class Cluster {
 							} else if ($k == 0 && $v[$zoom] !== null) {
 								$groupVal = $v[$zoom];
 							} 
+							//add new cluster values
 							$update = sprintf(	
 				          			"UPDATE userfield SET %s = '%s' WHERE userid = '%s'",
 				          			mysql_real_escape_string($zoom),

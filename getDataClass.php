@@ -5,13 +5,13 @@ class GetData {
 		protected $link;
 		protected $geo;
 		//construct
-
 		public function __construct(DbConnect $link, GeoCode $geo) {
 			//GeoCode dependency injected
 			$this->geo = $geo;
 		
 		}
 
+		//builds the markers to be clustered
 		public function buildMarkers() {
 			$results = mysql_query('SELECT uf.userid, uf.lat, uf.lng, uf.zoomLevel6
 						FROM userfield as uf
@@ -24,6 +24,7 @@ class GetData {
 			return $markers;
 		}
 
+		//grab the data for the initial checks
 		public function getData() {
 			$result = mysql_query('
 				SELECT uf.userid, uf.field9, uf.field10, uf.field19, uf.field23, uf.field24, uf.field61, uf.field22, uf.field13, uf.field14, uf.lat, uf.lng, uf.zoomLevel6, us.username,
@@ -38,8 +39,11 @@ class GetData {
 			}
 			return $result;
 		}
-
+		//
+		//WHERE (uf.userid = 210411)
+		//gets finalized data after checks and clustering
 		public function getPostData() {
+			$dt = new DateTime();
 			$result = mysql_query('
 				SELECT uf.userid, uf.field9, uf.field10, uf.field19, uf.field23, uf.field24, uf.field61, uf.field22, uf.field13, uf.field14, uf.lat, uf.lng, uf.zoomLevel6, us.username,
 				us.usertitle, us.joindate
@@ -56,9 +60,9 @@ class GetData {
 				if ($row['field61'] !="" && $row['field22'] !="" && $row['field19'] !="" && $row['field23'] !="" && $row['field61'] = $this->geo->guessCountry($row['field61'])) {
 					$members[$i]['userid'] = $row['userid'];
 					$members[$i]['username'] = $row['username'];
+            		//may add this back in later
             		//$members[$i]['num_posts'] = $row['posts'];
             		$members[$i]['user_title'] = $row['usertitle'];
-            		$dt = new DateTime();
 		            $dt->setTimestamp($row['joindate']);
 		            $members[$i]['join_date'] = $dt->format("Y");
 		            $members[$i]['country'] = $row['field61'];
@@ -82,12 +86,10 @@ class GetData {
 		            $members[$i]['coords']['lng'] = $row['lng'];
 		            $i++;
 				}
-			
 			}
 			$json = json_encode($members, true);
 			return $json;
 			mysql_free_result($result);
-			//return $result;
 		}
 }
 ?>
