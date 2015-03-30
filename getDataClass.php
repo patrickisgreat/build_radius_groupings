@@ -31,7 +31,7 @@ class GetData {
 				us.usertitle, us.posts, us.joindate
 				FROM userfield as uf
 				LEFT OUTER JOIN user as us ON uf.userid = us.userid
-				WHERE (uf.field22 <> "00000"  AND uf.lat is null)
+				WHERE (uf.field22 <> "00000"  AND uf.lat is null OR uf.lat = 0)
 			');
 
 			if (!$result) {
