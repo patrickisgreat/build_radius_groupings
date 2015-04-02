@@ -46,28 +46,74 @@ class Cluster {
 		        $marker  = array_pop($markers);
 		        $cluster = array();
 		        /* Compare against all markers which are left. */
+		        $groupVal = uniqid();
 		        foreach ($markers as $key => $target) {
 		            $haverSine = $this->haversineDistance($marker['lat'], $marker['lng'], $target['lat'], $target['lng']);
+		            $target['distance'] = $haverSine;
+		            
 		            /* If two markers are closer than given distance remove */
 		            /* target marker from array and add it to cluster.      */
+		            /* add distance and zoomLevel to the array before it gets clustered */
 		            if ($distance > $haverSine) {
 		                unset($markers[$key]);
+		                $target['zoomLevel6'] = $groupVal;
 		                $cluster[] = $target;
 		            }
 		        }
 		        /* If a marker has been added to cluster, add also the one  */
 		        /* we were comparing to and remove the original from array. */
+		        /* we're also setting the original to have the distance and zoomLevel values */
 		        if (count($cluster) > 0) {
+		            $marker['distance'] = $haverSine;
+		            $marker['zoomLevel6'] = $groupVal;
 		            $cluster[] = $marker;
 		            $clustered[] = $cluster;
 		        } else {
+		            $groupVal = uniqid();
+		            $marker['zoomLevel6'] = $groupVal;
 		            $clustered[] = $marker;
 		        }
 		    }
+		    $jsonClustered = json_encode($clustered);
+		    //echo $jsonClustered;
 		    return $clustered;
 		}
 
 		public function updateDb($clusters, $zoomLevel) {
+			$reset = "UPDATE userfield SET zoomLevel6 = null";
+			mysql_query($reset);
+			$clustered = $clusters;
+			$zoom = $zoomLevel;
+			foreach ($clustered as $key => &$val) {
+				if (is_array($val[0])) {
+					foreach ($val as $k => &$v) { 
+						$groupVal = $v['zoomLevel6'];
+						$update = sprintf(	
+		          			"UPDATE userfield SET %s = '%s' WHERE userid = '%s'",
+		          			mysql_real_escape_string($zoom),
+		          			mysql_real_escape_string($groupVal),
+		          			mysql_real_escape_string($v['userid'])
+					    );
+					    mysql_query($update);
+					}
+				} else {
+					$groupVal = $val['zoomLevel6'];
+					$update = sprintf(	
+	          			"UPDATE userfield SET %s = '%s' WHERE userid = '%s'",
+	          			mysql_real_escape_string($zoom),
+	          			mysql_real_escape_string($groupVal),
+	          			mysql_real_escape_string($val['userid'])
+				    );
+				    mysql_query($update);
+				}
+			}
+		}
+
+		/*deprecated	
+		public function updateDb($clusters, $zoomLevel) {
+			$reset = "UPDATE userfield SET zoomLevel6 = null";
+			mysql_query($reset);
+			die();
 			$clustered = $clusters;
 			$zoom = $zoomLevel;
 				foreach ($clustered as $key => &$val) {					
@@ -115,7 +161,7 @@ class Cluster {
 				}
 			return true;
 		}
-		
+		*/
 		public function build() {
 				$markers = $this->getData->buildMarkers();
 				for ($i=0; $i<7; $i++) {
